@@ -37,7 +37,8 @@
 import json
 import sys
 import re
-from typing import Any, Callable, Dict, Optional, Set, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 # This is not required if you've installed pycparser into
 # your site-packages/ with setup.py
@@ -61,7 +62,7 @@ _R = TypeVar("_R")
 
 def memodict(fn: Callable[[_T], _R]) -> Callable[[_T], _R]:
     """Fast memoization decorator for a function taking a single argument"""
-    cache: Dict[_T, _R] = {}
+    cache: dict[_T, _R] = {}
 
     def memoized(arg: _T) -> _R:
         if arg in cache:
@@ -74,7 +75,7 @@ def memodict(fn: Callable[[_T], _R]) -> Callable[[_T], _R]:
 
 
 @memodict
-def child_attrs_of(klass: type[c_ast.Node]) -> Set[str]:
+def child_attrs_of(klass: type[c_ast.Node]) -> set[str]:
     """
     Given a Node class, get a set of child attrs.
     Memoized to avoid highly repetitive string manipulation
@@ -85,11 +86,11 @@ def child_attrs_of(klass: type[c_ast.Node]) -> Set[str]:
     return all_attrs - non_child_attrs
 
 
-def to_dict(node: c_ast.Node) -> Dict[str, Any]:
+def to_dict(node: c_ast.Node) -> dict[str, Any]:
     """Recursively convert an ast into dict representation."""
     klass = node.__class__
 
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
 
     # Metadata
     result["_nodetype"] = klass.__name__
@@ -137,7 +138,7 @@ def to_json(node: c_ast.Node, **kwargs: Any) -> str:
     return json.dumps(to_dict(node), **kwargs)
 
 
-def file_to_dict(filename: str) -> Dict[str, Any]:
+def file_to_dict(filename: str) -> dict[str, Any]:
     """Load C file into dict representation of ast"""
     ast = parse_file(filename, use_cpp=True)
     return to_dict(ast)
@@ -149,7 +150,7 @@ def file_to_json(filename: str, **kwargs: Any) -> str:
     return to_json(ast, **kwargs)
 
 
-def _parse_coord(coord_str: Optional[str]) -> Optional[Coord]:
+def _parse_coord(coord_str: str | None) -> Coord | None:
     """Parse coord string (file:line[:column]) into Coord object."""
     if coord_str is None:
         return None
@@ -178,7 +179,7 @@ def _convert_to_obj(value: Any) -> Any:
             return value
 
 
-def from_dict(node_dict: Dict[str, Any]) -> c_ast.Node:
+def from_dict(node_dict: dict[str, Any]) -> c_ast.Node:
     """Recursively build an ast from dict representation"""
     class_name = node_dict.pop("_nodetype")
 

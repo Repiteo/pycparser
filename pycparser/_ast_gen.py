@@ -178,7 +178,7 @@ _PROLOGUE_COMMENT = r"""#-------------------------------------------------------
 """
 _PROLOGUE_CODE = r'''
 import sys
-from typing import Any, ClassVar, IO, Optional
+from typing import Any, ClassVar, IO
 
 def _repr(obj):
     """
@@ -194,7 +194,7 @@ class Node:
     """ Abstract base class for AST nodes.
     """
     attr_names: ClassVar[tuple[str, ...]] = ()
-    coord: Optional[Any]
+    coord: Any | None
     def __repr__(self):
         """ Generates a python representation of the current node
         """
@@ -227,7 +227,7 @@ class Node:
         showemptyattrs: bool = True,
         nodenames: bool = False,
         showcoord: bool = False,
-        _my_node_name: Optional[str] = None,
+        _my_node_name: str | None = None,
     ):
         """ Pretty print the Node and all its attributes and
             children (recursively) to a buffer.
